@@ -1,0 +1,6 @@
+packages:
+  - 'apps/*'
+  - 'services/api'
+  - 'services/pandoc'
+  - 'services/crawler'
+  - 'packages/*'

@@ -1,0 +1,30 @@
+{
+  "name": "@castdown/api",
+  "version": "0.1.0-alpha",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node --import tsx/esm src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "issue-key": "tsx scripts/issue-key.ts"
+  },
+  "dependencies": {
+    "@castdown/cleaners": "workspace:*",
+    "@castdown/shared": "workspace:*",
+    "@castdown/storage": "workspace:*",
+    "@hono/node-server": "^1.13.0",
+    "hono": "^4.6.0",
+    "ioredis": "^5.4.1",
+    "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

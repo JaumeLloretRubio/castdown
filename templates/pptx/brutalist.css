@@ -1,0 +1,67 @@
+/* castdown — Marp theme: brutalist
+ * Use: marp --theme-set ./templates/pptx --theme brutalist input.md
+ */
+
+/* @theme brutalist */
+
+@import "default";
+
+:root {
+  --ink: #0b0b0b;
+  --bg:  #f4f1e8;
+  --red: #ff2e2e;
+  --paper: #ebe7d8;
+  --mute: #6b6b6b;
+}
+
+section {
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 28px;
+  padding: 60px 70px;
+  border: 4px solid var(--ink);
+}
+
+h1 {
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  border-bottom: 4px solid var(--ink);
+  padding-bottom: 14px;
+  text-transform: lowercase;
+}
+
+h2 {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+h3 { font-size: 28px; color: var(--red); }
+
+a { color: var(--red); }
+
+code, pre {
+  font-family: inherit;
+  background: var(--paper);
+}
+pre {
+  border: 2px solid var(--ink);
+  padding: 12px 16px;
+  font-size: 22px;
+}
+
+blockquote {
+  border-left: 6px solid var(--ink);
+  padding: 0 24px;
+  color: var(--mute);
+}
+
+table { border-collapse: collapse; }
+th, td { border: 2px solid var(--ink); padding: 8px 12px; }
+th { background: var(--ink); color: var(--bg); }
+
+footer, header {
+  font-size: 14px;
+  color: var(--mute);
+}

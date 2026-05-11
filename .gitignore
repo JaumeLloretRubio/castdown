@@ -1,0 +1,65 @@
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Dependencies
+node_modules/
+.pnpm-store/
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+.python-version
+
+# Build output
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project runtime data
+data/
+storage/
+tmp/
+*.sqlite
+*.sqlite-journal
+*.db
+
+# Docker volumes
+.docker-data/
+
+# Test artifacts
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Generated outputs (conversion results during dev)
+output/
+fixtures-out/
+
+# Local-only docs / planning / Claude config (no se publican al repo)
+docs/
+Plan y mockup/
+.claude/
+CLAUDE.md

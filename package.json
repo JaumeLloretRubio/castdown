@@ -1,0 +1,23 @@
+{
+  "name": "castdown",
+  "private": true,
+  "version": "0.1.0-alpha",
+  "description": "Cast anything down to Markdown. Self-hostable conversion toolkit with MCP support.",
+  "type": "module",
+  "packageManager": "pnpm@9.12.0",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "docker compose up",
+    "dev:build": "docker compose up --build",
+    "down": "docker compose down",
+    "logs": "docker compose logs -f",
+    "clean": "docker compose down -v && rm -rf data tmp output"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

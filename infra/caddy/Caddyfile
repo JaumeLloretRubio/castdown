@@ -1,0 +1,40 @@
+# castdown — Caddy reverse proxy
+# For local dev: edit /etc/hosts → 127.0.0.1 castdown.local
+# For Pi self-host: replace with your domain or use Cloudflare Tunnel instead.
+
+{
+    # Global options
+    admin off
+    log {
+        output stdout
+        format console
+    }
+}
+
+# ── Local dev ─────────────────────────────────────────────────
+:80, http://castdown.local {
+    encode gzip zstd
+
+    # API
+    handle /api/* {
+        reverse_proxy api:3001
+    }
+
+    # Health
+    handle /health {
+        reverse_proxy api:3001
+    }
+
+    # Web frontend (when running; falls through to 502 until apps/web exists)
+    handle {
+        reverse_proxy web:3000
+    }
+}
+
+# ── Production template (uncomment + edit domain) ─────────────
+# castdown.example.com {
+#     encode gzip zstd
+#     handle /api/* { reverse_proxy api:3001 }
+#     handle /health { reverse_proxy api:3001 }
+#     handle { reverse_proxy web:3000 }
+# }

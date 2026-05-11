@@ -1,0 +1,10 @@
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+python-multipart==0.0.12
+markitdown[all]==0.0.1a3
+# markitdown 0.0.1a3 ships _CustomMarkdownify that subclasses markdownify
+# without the parent_tags kwarg introduced in markdownify 1.x. Pin to last
+# compatible version. Drop this pin when markitdown publishes a fix.
+markdownify<1.0.0
+pydantic==2.9.2
+python-dotenv==1.0.1

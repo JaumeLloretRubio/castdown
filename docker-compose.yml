@@ -1,0 +1,100 @@
+name: castdown
+
+services:
+  # ─── Edge + UI: solo perfil `cloud` (Pi → tunel + Vercel; no se levantan por defecto)
+  caddy:
+    image: caddy:2.8-alpine
+    profiles: ["cloud"]
+    restart: unless-stopped
+    ports:
+      - "${CADDY_HTTP_PORT:-80}:80"
+      - "${CADDY_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - web
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    profiles: ["cloud"]
+    restart: unless-stopped
+    environment:
+      CASTDOWN_API_URL: http://api:3001
+      CASTDOWN_API_KEY: ${API_KEYS%%,*}
+    expose:
+      - "3000"
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      MARKITDOWN_URL: http://markitdown-svc:8001
+      PANDOC_URL: http://pandoc-svc:8002
+      CRAWLER_URL: http://crawler-svc:8003
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "${API_PORT:-3001}:3001"
+    depends_on:
+      - redis
+      - markitdown-svc
+      - pandoc-svc
+      - crawler-svc
+    volumes:
+      - ./data:/data
+
+  markitdown-svc:
+    build:
+      context: ./services/markitdown
+    restart: unless-stopped
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-50}
+    expose:
+      - "8001"
+
+  pandoc-svc:
+    build:
+      context: .
+      dockerfile: services/pandoc/Dockerfile
+    restart: unless-stopped
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      TEMPLATES_DIR: /app/templates
+    expose:
+      - "8002"
+
+  crawler-svc:
+    build:
+      context: .
+      dockerfile: services/crawler/Dockerfile
+    restart: unless-stopped
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      CRAWLER_MAX_CONCURRENCY: ${CRAWLER_MAX_CONCURRENCY:-2}
+    expose:
+      - "8003"
+    shm_size: 1gb # chromium
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    expose:
+      - "6379"
+
+volumes:
+  caddy_data:
+  caddy_config:
+  redis_data:
