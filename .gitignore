@@ -51,6 +51,10 @@ tmp/
 # Docker volumes
 .docker-data/
 
+# Native local orchestration (start-local.ps1 / stop-local.ps1)
+.local-pids/
+.local-logs/
+
 # Test artifacts
 coverage/
 .nyc_output/
