@@ -14,6 +14,9 @@ COPY tsconfig.base.json ./
 COPY apps/web ./apps/web
 WORKDIR /app/apps/web
 ENV NEXT_TELEMETRY_DISABLED=1
+# Activa `output: "standalone"` en next.config.mjs sólo durante build Docker.
+# En Vercel esta var no está set → Next.js sirve normal.
+ENV DOCKER_BUILD=1
 RUN pnpm build
 
 FROM base AS runtime

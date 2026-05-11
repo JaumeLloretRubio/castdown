@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: "standalone",
+  // standalone sólo en builds Docker (Pi self-host / perfil cloud).
+  // Vercel auto-detecta Next.js y sirve normal — standalone aquí
+  // confunde a Vercel y puede servir 404 o build vacío.
+  output: process.env.DOCKER_BUILD === "1" ? "standalone" : undefined,
 
   async rewrites() {
     // CASTDOWN_API_URL = server-only var (sin NEXT_PUBLIC_). El browser nunca habla

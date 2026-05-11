@@ -78,15 +78,55 @@ else
   ok "Tailscale instalado"
 fi
 
-# ─── 4. Repo ───────────────────────────────────────────────────────────────────
+# ─── 4. GitHub CLI + auth (repo es privado → necesario para clonar) ────────────
+if command -v gh >/dev/null 2>&1; then
+  ok "GitHub CLI ya instalado: $(gh --version | head -1)"
+else
+  log "Instalando GitHub CLI desde repo oficial"
+  sudo_ mkdir -p -m 755 /etc/apt/keyrings
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    | sudo_ dd of=/etc/apt/keyrings/githubcli-archive-keyring.gpg status=none
+  sudo_ chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+    | sudo_ tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+  sudo_ apt-get update -qq
+  sudo_ apt-get install -y gh
+fi
+
+# Auth — 3 caminos
+if gh auth status >/dev/null 2>&1; then
+  ok "gh ya autenticado como $(gh api user --jq .login 2>/dev/null || echo '?')"
+elif [[ -n "${GH_TOKEN:-}" ]]; then
+  log "Autenticando con GH_TOKEN (PAT desde env)"
+  echo "$GH_TOKEN" | gh auth login --with-token
+  ok "gh autenticado vía PAT"
+else
+  warn "Repo privado — necesitas autenticar GitHub primero."
+  echo ""
+  echo "  Opción A (rápida, headless):"
+  echo "    1. Genera un PAT en https://github.com/settings/tokens"
+  echo "       Scopes mínimos: repo  (read access es suficiente)"
+  echo "    2. Re-ejecuta:  GH_TOKEN=ghp_xxx bash $0"
+  echo ""
+  echo "  Opción B (interactiva, requiere navegador):"
+  echo "    gh auth login --web --hostname github.com"
+  echo "    Luego re-ejecuta este script."
+  echo ""
+  die "Sin auth gh no puedo clonar repo privado"
+fi
+
+# ─── 5. Repo ───────────────────────────────────────────────────────────────────
 if [[ -d "$INSTALL_DIR/.git" ]]; then
   log "Repo ya clonado en $INSTALL_DIR — pulling $BRANCH"
   git -C "$INSTALL_DIR" fetch --quiet
   git -C "$INSTALL_DIR" checkout --quiet "$BRANCH"
   git -C "$INSTALL_DIR" pull --quiet --ff-only
 else
-  log "Clonando $REPO_URL → $INSTALL_DIR"
-  git clone --branch "$BRANCH" --depth 1 "$REPO_URL" "$INSTALL_DIR"
+  # gh repo clone usa las credenciales almacenadas → funciona con repos privados.
+  # El REPO_URL del top es informativo; aquí extraemos owner/name del URL.
+  repo_slug=$(echo "$REPO_URL" | sed -E 's|^https?://github\.com/||; s|\.git$||')
+  log "Clonando $repo_slug → $INSTALL_DIR (vía gh, repo privado OK)"
+  gh repo clone "$repo_slug" "$INSTALL_DIR" -- --branch "$BRANCH" --depth 1
 fi
 cd "$INSTALL_DIR"
 ok "Repo en $INSTALL_DIR"
