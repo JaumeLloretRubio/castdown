@@ -3,6 +3,13 @@
 /**
  * Thin client over the castdown API. Next.js rewrites /api/* to the gateway,
  * so we just hit relative paths from the browser.
+ *
+ * Auth model:
+ *   - Production (Vercel + Pi via tunnel): middleware.ts inyecta
+ *     `Authorization: Bearer <CASTDOWN_API_KEY>` server-side antes del rewrite.
+ *     El browser NUNCA envía X-API-Key en las llamadas reales.
+ *   - `validateKey()` es la excepción: envía X-API-Key explícito para que el
+ *     SettingsModal pueda probar una key candidata sin persistirla.
  */
 export interface CastFileResponse {
   markdown: string;
@@ -31,7 +38,10 @@ export function setApiKey(key: string): void {
   window.dispatchEvent(new CustomEvent("cd:api-key-changed"));
 }
 
-const headers = (): HeadersInit => ({ "X-API-Key": getApiKey() });
+// Sin X-API-Key: el middleware Vercel inyecta Authorization server-side.
+// Si se enviase X-API-Key desde browser, la gateway lo leería primero (auth.ts)
+// y anularía la inyección segura del middleware. Mantener vacío.
+const headers = (): HeadersInit => ({});
 
 export interface WhoAmI {
   ok: true;

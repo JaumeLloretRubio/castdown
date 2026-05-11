@@ -25,7 +25,9 @@ services:
     restart: unless-stopped
     environment:
       CASTDOWN_API_URL: http://api:3001
-      CASTDOWN_API_KEY: ${API_KEYS%%,*}
+      # Compose NO soporta `${VAR%%,*}`. Usa WEB_API_KEY separado que install-pi.sh
+      # sincroniza con el primer valor de API_KEYS.
+      CASTDOWN_API_KEY: ${WEB_API_KEY:-cd_dev_changeme}
     expose:
       - "3000"
     depends_on:

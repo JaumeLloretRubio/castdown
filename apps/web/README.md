@@ -9,11 +9,21 @@ pnpm -F @castdown/web dev
 # → http://localhost:3000
 ```
 
-The app rewrites `/api/*` and `/health` to the gateway. Default gateway URL:
-`http://localhost:3001`. Override with `NEXT_PUBLIC_API_URL`.
+The app rewrites `/api/*` and `/health` to the gateway. Gateway URL:
+`http://localhost:3001` por defecto, override con `CASTDOWN_API_URL` (server-only).
 
-API key is read from `localStorage["cd_api_key"]`. Default fallback:
-`cd_dev_changeme`. Set it from devtools or build a settings drawer (TODO).
+**Auth model (cambió en sesión 09):** `middleware.ts` inyecta `Authorization: Bearer`
+server-side antes del rewrite, usando `process.env.CASTDOWN_API_KEY`. El browser
+nunca envía la key.
+
+- En `next dev` sin var → fallback automático a `cd_dev_changeme`.
+- En Vercel deploy → setea `CASTDOWN_API_KEY` en project env vars (NO prefijo
+  `NEXT_PUBLIC_`, debe ser server-only).
+
+`SettingsModal` sigue presente pero su rol cambia: el botón TEST valida una key
+candidata contra la gateway; el botón SAVE persiste en `localStorage` pero ya
+NO afecta las llamadas reales (middleware ignora localStorage). Útil sólo para
+probar claves antes de moverlas a Vercel env.
 
 ## Architecture
 - `app/page.tsx` — single landing page composing all sections.

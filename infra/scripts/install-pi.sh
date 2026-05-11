@@ -12,7 +12,7 @@
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-REPO_URL="${CASTDOWN_REPO_URL:-https://github.com/CHANGE_ME/castdown.git}"
+REPO_URL="${CASTDOWN_REPO_URL:-https://github.com/JaumeLloretRubio/castdown.git}"
 INSTALL_DIR="${CASTDOWN_DIR:-$HOME/castdown}"
 BRANCH="${CASTDOWN_BRANCH:-main}"
 
@@ -96,7 +96,10 @@ if [[ ! -f .env ]]; then
   log "Generando .env desde .env.example con API key aleatoria"
   cp .env.example .env
   api_key="cd_$(openssl rand -hex 24)"
+  # API_KEYS = lista (gateway) — WEB_API_KEY = la única que usa el web container.
+  # Tienen que coincidir para que el web hable con el api.
   sed -i "s|^API_KEYS=.*|API_KEYS=$api_key|" .env
+  sed -i "s|^WEB_API_KEY=.*|WEB_API_KEY=$api_key|" .env
   ok ".env creado. Tu API key:"
   echo -e "${C_DIM}     $api_key${C_END}"
   echo -e "${C_DIM}     (guárdala — la necesitas en Vercel como CASTDOWN_API_KEY)${C_END}"
@@ -115,12 +118,15 @@ else
 fi
 
 # ─── 7. Health probe ───────────────────────────────────────────────────────────
+# Aceptamos 200 (todo OK) o 503 (gateway up, microservicios aún calentando).
+# Conexión rechazada = gateway todavía arrancando → seguir esperando.
 log "Esperando readiness (max 60s)"
 for i in $(seq 1 30); do
-  if curl -fsS http://localhost:3001/health >/dev/null 2>&1; then
-    ok "API gateway responde en :3001"
-    break
-  fi
+  code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3001/health 2>/dev/null || echo "000")
+  case "$code" in
+    200) ok "API gateway healthy en :3001"; break ;;
+    503) ok "API gateway up en :3001 (microservicios aún arrancando — normal)"; break ;;
+  esac
   sleep 2
   [[ $i -eq 30 ]] && warn "Timeout — revisa: docker compose logs"
 done
