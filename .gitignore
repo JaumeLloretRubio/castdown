@@ -37,9 +37,12 @@ desktop.ini
 *.swp
 *.swo
 
-# Project runtime data
+# Project runtime data.
+# Importante: `storage/` SÍ va anchorado al root porque existe
+# packages/storage/ como código. Los demás se mantienen loose
+# (runtime data se crea bajo services/*/data o similares).
 data/
-storage/
+/storage/
 tmp/
 *.sqlite
 *.sqlite-journal
