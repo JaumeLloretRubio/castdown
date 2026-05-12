@@ -12,6 +12,7 @@ import { crawlRoute } from "./routes/crawl.js";
 import { jobsRoute } from "./routes/jobs.js";
 import { healthRoute } from "./routes/health.js";
 import { whoamiRoute } from "./routes/whoami.js";
+import { templatesRoute } from "./routes/templates.js";
 import { startCleanupCron } from "./cron/cleanup.js";
 
 import type { AppEnv } from "./types.js";
@@ -36,6 +37,7 @@ api.route("/cast", castRoute);
 api.route("/crawl", crawlRoute);
 api.route("/jobs", jobsRoute);
 api.route("/whoami", whoamiRoute);
+api.route("/templates", templatesRoute);
 app.route("/api", api);
 
 app.notFound((c) => c.json({ error: "not_found", path: c.req.path }, 404));

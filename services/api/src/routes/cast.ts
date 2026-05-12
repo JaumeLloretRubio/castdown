@@ -10,7 +10,7 @@ export const castRoute = new Hono<AppEnv>();
 
 const castFromMdSchema = z.object({
   markdown: z.string().min(1),
-  target: z.enum(["pdf", "docx", "html", "pptx", "epub", "xlsx"]),
+  target: z.enum(["pdf", "docx", "html", "pptx", "epub", "xlsx", "tex"]),
   template: z.string().optional(),
 });
 
