@@ -16,6 +16,8 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from markitdown import MarkItDown
 
+from pdf_tables import pdf_to_markdown
+
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO").upper())
 log = logging.getLogger("markitdown-svc")
 
@@ -39,7 +41,7 @@ async def cast(file: UploadFile = File(...)) -> JSONResponse:
     if len(contents) > MAX_BYTES:
         raise HTTPException(413, f"file_too_large (max {MAX_BYTES} bytes)")
 
-    suffix = Path(file.filename).suffix or ".bin"
+    suffix = (Path(file.filename).suffix or ".bin").lower()
     t0 = time.perf_counter()
 
     # MarkItDown reads from path — write to temp.
@@ -48,12 +50,20 @@ async def cast(file: UploadFile = File(...)) -> JSONResponse:
         tmp_path = tmp.name
 
     try:
-        result = converter.convert(tmp_path)
-        markdown = result.text_content or ""
+        # PDFs go through pdfplumber so structural tables become GFM.
+        # All other formats stay on MarkItDown's native converters.
+        if suffix == ".pdf":
+            markdown = pdf_to_markdown(tmp_path)
+            engine = "pdfplumber"
+        else:
+            result = converter.convert(tmp_path)
+            markdown = result.text_content or ""
+            engine = "markitdown"
+
         elapsed_ms = int((time.perf_counter() - t0) * 1000)
         log.info(
-            "cast ok name=%s size=%d ms=%d out_chars=%d",
-            file.filename, len(contents), elapsed_ms, len(markdown),
+            "cast ok name=%s engine=%s size=%d ms=%d out_chars=%d",
+            file.filename, engine, len(contents), elapsed_ms, len(markdown),
         )
         return JSONResponse({
             "markdown": markdown,
@@ -61,7 +71,7 @@ async def cast(file: UploadFile = File(...)) -> JSONResponse:
                 "filename": file.filename,
                 "size_bytes": len(contents),
                 "elapsed_ms": elapsed_ms,
-                "engine": "markitdown",
+                "engine": engine,
             },
         })
     except Exception as e:

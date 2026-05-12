@@ -6,5 +6,10 @@ markitdown[all]==0.0.1a3
 # without the parent_tags kwarg introduced in markdownify 1.x. Pin to last
 # compatible version. Drop this pin when markitdown publishes a fix.
 markdownify<1.0.0
+# pdfplumber adds structural table detection on top of pdfminer.six (already
+# bundled with markitdown[all]). Pure Python, ARM-safe (Pi-friendly).
+# Pin >=0.11.9 — earlier versions hard-pin pdfminer.six==20231228 which would
+# downgrade the snapshot markitdown[all] ships.
+pdfplumber>=0.11.9,<0.12
 pydantic==2.9.2
 python-dotenv==1.0.1
