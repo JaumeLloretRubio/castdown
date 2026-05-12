@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="$lang$">
+<head>
+<meta charset="utf-8">
+<title>$title$</title>
+<style>
+  @page { size: A4; margin: 2cm; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #fff;
+    color: #000;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11pt;
+    line-height: 1.5;
+    max-width: 17cm;
+    margin-inline: auto;
+  }
+  h1, h2, h3, h4 { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; font-weight: 700; }
+  h1 { font-size: 22pt; margin: 0 0 0.4em; }
+  h2 { font-size: 16pt; margin-top: 1.4em; }
+  h3 { font-size: 13pt; margin-top: 1.2em; }
+  a { color: #000; text-decoration: underline; }
+  pre, code { font-family: "Courier New", monospace; }
+  pre { background: #f5f5f5; padding: 8pt; border: 0.5pt solid #aaa; overflow-x: auto; font-size: 9.5pt; }
+  code { font-size: 0.95em; }
+  blockquote { border-left: 2pt solid #888; margin: 1em 0; padding: 0 1em; font-style: italic; }
+  table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 10pt; }
+  th, td { border: 0.5pt solid #888; padding: 4pt 6pt; text-align: left; }
+  th { background: #eee; font-weight: 700; }
+  hr { border: 0; border-top: 0.5pt solid #888; margin: 1.5em 0; }
+  img { max-width: 100%; height: auto; }
+  @media print {
+    a { color: #000; }
+    pre, blockquote, table { page-break-inside: avoid; }
+    h1, h2, h3 { page-break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+$body$
+</body>
+</html>

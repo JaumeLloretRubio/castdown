@@ -1,0 +1,144 @@
+% castdown LaTeX template — default
+% Compatible with pandoc -t latex body-only output.
+% Requires: pdflatex / xelatex / lualatex.
+\documentclass[
+  $if(fontsize)$$fontsize$,$endif$
+  a4paper
+]{article}
+
+% ── Encoding & fonts ─────────────────────────────────────────────
+$if(xelatex)$
+\usepackage{fontspec}
+\setmainfont{Linux Libertine O}[BoldFont=Linux Libertine O Bold]
+\setmonofont{DejaVu Sans Mono}[Scale=0.88]
+$else$
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+$endif$
+
+% ── Language ─────────────────────────────────────────────────────
+$if(lang)$
+\usepackage[$lang$]{babel}
+$else$
+\usepackage[english]{babel}
+$endif$
+
+% ── Page layout ──────────────────────────────────────────────────
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=3cm, right=2.5cm]{geometry}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+
+% ── Typography ───────────────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.15}
+
+% ── Headings ─────────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+\titlespacing*{\section}{0pt}{1.5ex plus .4ex minus .2ex}{0.8ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.2ex plus .3ex}{0.5ex}
+
+% ── Tables ───────────────────────────────────────────────────────
+\usepackage{longtable, booktabs, array, multirow}
+\setlength{\LTleft}{0pt}
+\setlength{\defaultaddspace}{2pt}
+
+% ── Code blocks (pandoc Shaded / Highlighting) ───────────────────
+\usepackage{xcolor}
+\usepackage{fancyvrb}
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{242,242,242}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},fontsize=\small}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+
+% Pandoc syntax-highlight tokens
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.86,0.15,0.15}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.50,0.30,0.00}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.63,0.50,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.70}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.40,0.60}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.50,0.25}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.45,0.45,0.45}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.45,0.45,0.45}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.50,0.00,0.50}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.80}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.45,0.45,0.45}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.80,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.80}{#1}}
+\newcommand{\FunctionTok}[1]{#1}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.45,0.45,0.45}{\textit{#1}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.60,0.25,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.45,0.30,0.00}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.45,0.30,0.00}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{#1}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.25,0.50,0.25}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.50,0.25}{#1}}
+\newcommand{\VariableTok}[1]{#1}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.50,0.25}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.45,0.30,0.00}{\textbf{\textit{#1}}}}
+
+% ── Images ───────────────────────────────────────────────────────
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,keepaspectratio}
+
+% ── Links ────────────────────────────────────────────────────────
+\usepackage[hidelinks, colorlinks=true,
+  linkcolor=black, citecolor=black,
+  urlcolor=blue!70!black, filecolor=black]{hyperref}
+\urlstyle{same}
+
+% ── Lists (pandoc tightlist) ─────────────────────────────────────
+\providecommand{\tightlist}{\setlength{\itemsep}{2pt}\setlength{\parskip}{0pt}}
+
+% ── Headers / footers ────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small$if(title)$$title$$endif$}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── User header includes ─────────────────────────────────────────
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+% ── Document metadata ────────────────────────────────────────────
+$if(title)$\title{$title$}$endif$
+$if(author)$
+\author{$for(author)$$author$$sep$ \and $endfor$}
+$endif$
+$if(date)$\date{$date$}$else$\date{\today}$endif$
+
+% ─────────────────────────────────────────────────────────────────
+\begin{document}
+$if(title)$\maketitle$endif$
+$if(abstract)$
+\begin{abstract}
+\noindent $abstract$
+\end{abstract}
+\vspace{1em}
+$endif$
+$if(toc)$
+\tableofcontents
+\newpage
+$endif$
+
+$body$
+\end{document}

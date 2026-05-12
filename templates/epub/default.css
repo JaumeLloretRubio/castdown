@@ -1,0 +1,65 @@
+/* castdown EPUB — default: comfortable reading, serif body */
+body {
+  font-family: Georgia, "Liberation Serif", "Charter", serif;
+  font-size: 1em;
+  line-height: 1.65;
+  color: #1a1a1a;
+  margin: 0;
+  padding: 1em 1.2em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.2;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+  color: #111;
+}
+h1 { font-size: 1.9em; border-bottom: 1px solid #ccc; padding-bottom: 0.25em; margin-top: 0.6em; }
+h2 { font-size: 1.4em; }
+h3 { font-size: 1.15em; }
+h4 { font-size: 1em; font-style: italic; }
+p { margin: 0 0 0.8em; }
+p:first-child { margin-top: 0; }
+a { color: #1a5ca8; text-decoration: underline; }
+strong { font-weight: 700; }
+em { font-style: italic; }
+code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.88em;
+  background: #f2f2f2;
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+}
+pre {
+  background: #f2f2f2;
+  padding: 0.8em 1em;
+  overflow-x: auto;
+  font-size: 0.85em;
+  border-left: 3px solid #ccc;
+  margin: 1em 0;
+}
+pre code { background: none; padding: 0; border-radius: 0; font-size: 1em; }
+blockquote {
+  border-left: 3px solid #aaa;
+  margin: 1em 0;
+  padding: 0.1em 1em;
+  color: #555;
+  font-style: italic;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 0.93em;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.4em 0.6em;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: #f0f0f0; font-weight: 700; }
+img { max-width: 100%; height: auto; display: block; margin: 0.5em auto; }
+hr { border: 0; border-top: 1px solid #ccc; margin: 2em 0; }
+ul, ol { margin: 0 0 0.8em; padding-left: 2em; }
+li { margin-bottom: 0.25em; }
