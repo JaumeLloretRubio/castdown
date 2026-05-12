@@ -27,6 +27,52 @@ describe("corpus: dirty-pdf", () => {
   });
 });
 
+describe("corpus: dirty-docx", () => {
+  it("strips pandoc span attributes from DOCX output", async () => {
+    const input = await readFile(resolve(fixtures, "dirty-docx.in.md"), "utf8");
+    const { markdown, applied } = await clean(input, { source: "docx" });
+
+    // Span attributes stripped
+    expect(markdown).not.toMatch(/\{\.underline\}/);
+    expect(markdown).not.toMatch(/\{\.smallcaps\}/);
+    expect(markdown).not.toMatch(/\{\.mark\}/);
+    expect(markdown).not.toMatch(/\{\.highlight\}/);
+    // Strikethrough converted to GFM
+    expect(markdown).toMatch(/~~texto también tachado~~/);
+    // &nbsp; replaced
+    expect(markdown).not.toMatch(/&nbsp;/);
+    // HTML tables converted to GFM (remark-gfm pads columns, so match without exact spacing)
+    expect(markdown).toMatch(/\|\s*Métrica\s*\|/);
+    expect(markdown).not.toMatch(/<table/i);
+    // Cleaner ran
+    expect(applied).toContain("stripDocxArtifacts");
+  });
+});
+
+describe("corpus: dirty-pptx", () => {
+  it("strips speaker notes sections from PPTX output", async () => {
+    const input = await readFile(resolve(fixtures, "dirty-pptx.in.md"), "utf8");
+    const { markdown, applied } = await clean(input, { source: "pptx" });
+
+    // Speaker notes removed
+    expect(markdown).not.toMatch(/Gartner Q1 2026/);
+    expect(markdown).not.toMatch(/board meeting del 15 de abril/);
+    expect(markdown).not.toMatch(/plan de contratación/);
+    // Slide content preserved
+    expect(markdown).toMatch(/Estrategia de Producto/);
+    expect(markdown).toMatch(/Objetivos estratégicos/);
+    expect(markdown).toMatch(/Hoja de ruta/);
+    // Cleaner ran
+    expect(applied).toContain("stripPptxNotes");
+  });
+
+  it("keeps notes when keepNotes=true", async () => {
+    const input = await readFile(resolve(fixtures, "dirty-pptx.in.md"), "utf8");
+    const { markdown } = await clean(input, { source: "pptx", keepNotes: true });
+    expect(markdown).toMatch(/Gartner Q1 2026/);
+  });
+});
+
 describe("corpus: dirty-toc", () => {
   it("wraps detected TOC", async () => {
     const input = await readFile(resolve(fixtures, "dirty-toc.in.md"), "utf8");
