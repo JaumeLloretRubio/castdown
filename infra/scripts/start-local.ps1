@@ -116,6 +116,8 @@ $env:CASTDOWN_API_URL = "http://127.0.0.1:3001"
 $env:CASTDOWN_API_KEY = "cd_dev_changeme"
 
 # === Launcher generico ===
+# Resuelve shims .cmd/.bat (pnpm, npm) que CreateProcess rechaza con
+# "%1 no es una aplicacion Win32 valida". Los wrappea via cmd.exe /c.
 function Start-Svc {
   param(
     [string]$Name,
@@ -125,10 +127,31 @@ function Start-Svc {
   )
   $log = Join-Path $logsDir "$Name.log"
   $err = Join-Path $logsDir "$Name.err.log"
-  $proc = Start-Process -PassThru -NoNewWindow `
-    -FilePath $File -ArgumentList $ArgList `
-    -WorkingDirectory $Cwd `
-    -RedirectStandardOutput $log -RedirectStandardError $err
+
+  $resolved = $File
+  if (-not [System.IO.Path]::IsPathRooted($File)) {
+    $cmd = Get-Command $File -ErrorAction SilentlyContinue
+    if ($cmd) { $resolved = $cmd.Source }
+  }
+
+  $ext = [System.IO.Path]::GetExtension($resolved).ToLower()
+  if ($ext -eq ".cmd" -or $ext -eq ".bat" -or $ext -eq ".ps1") {
+    # Quote args con espacios; cmd /c necesita la linea entera
+    $quoted = $ArgList | ForEach-Object {
+      if ($_ -match '\s') { '"' + $_ + '"' } else { $_ }
+    }
+    $cmdArgs = @("/c", "`"$resolved`"") + $quoted
+    $proc = Start-Process -PassThru -NoNewWindow `
+      -FilePath "cmd.exe" -ArgumentList $cmdArgs `
+      -WorkingDirectory $Cwd `
+      -RedirectStandardOutput $log -RedirectStandardError $err
+  } else {
+    $proc = Start-Process -PassThru -NoNewWindow `
+      -FilePath $resolved -ArgumentList $ArgList `
+      -WorkingDirectory $Cwd `
+      -RedirectStandardOutput $log -RedirectStandardError $err
+  }
+
   $proc.Id | Out-File (Join-Path $pidsDir "$Name.pid") -Encoding ascii -NoNewline
   Write-Host ("    {0,-12} pid={1}  log=.local-logs\{0}.log" -f $Name, $proc.Id)
 }
@@ -148,8 +171,11 @@ Start-Svc -Name "api" -Cwd "services\api" `
   -File "node" -ArgList @("--import","tsx/esm","src/index.ts")
 
 if ($Web) {
+  # next CLI directo con node: evita shim pnpm.cmd (problemas stdio bajo Start-Process)
+  $nextBin = Join-Path $root "apps\web\node_modules\next\dist\bin\next"
+  if (-not (Test-Path $nextBin)) { Die "Falta apps\web\node_modules\next - corre pnpm install" }
   Start-Svc -Name "web" -Cwd "apps\web" `
-    -File "pnpm" -ArgList @("dev")
+    -File "node" -ArgList @($nextBin,"dev","-p","3000")
 }
 
 # === Health probes ===

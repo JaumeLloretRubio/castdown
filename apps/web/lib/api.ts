@@ -97,3 +97,14 @@ export async function getHealth(): Promise<{ status: string; services: Record<st
   const res = await fetch(`/health`);
   return res.json();
 }
+
+export interface TemplateEntry { name: string; isDefault: boolean }
+export interface TemplatesResponse {
+  templates: Record<string, TemplateEntry[]>;
+}
+
+export async function getTemplates(): Promise<TemplatesResponse> {
+  const res = await fetch(`/api/templates`, { headers: headers() });
+  if (!res.ok) throw new Error(`api ${res.status}: ${await res.text()}`);
+  return res.json();
+}
