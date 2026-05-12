@@ -1,25 +1,23 @@
 import { execa } from "execa";
-import { join } from "node:path";
-import { existsSync } from "node:fs";
-import { RenderArgs, TEMPLATES_DIR } from "./common.js";
+import { RenderArgs, templatePath } from "./common.js";
 
 /**
- * PPTX via Marp. The CSS theme lives at templates/pptx/<template>.css.
- * If `template` is omitted we let Marp use its bundled default.
+ * PPTX via pandoc nativo. No depende de Chrome/puppeteer.
+ *
+ * Decision arquitectura (sesion 10): se descarto Marp como engine principal
+ * porque marp-cli + puppeteer cuelga en Windows native dev y la deteccion
+ * de Chrome es fragil. Pandoc native pptx writer es estable cross-platform
+ * y no requiere binarios browser.
+ *
+ * Trade-off: se pierden los CSS themes de Marp (`templates/pptx/*.css`).
+ * Reemplazo: reference docs `.pptx` (mismo patron que docx via --reference-doc).
+ * Para crear: abre pptx default en PowerPoint/LibreOffice Impress, define
+ * estilos master, guarda como `templates/pptx/<name>.pptx`.
  */
 export async function renderPptx({ inputPath, outputPath, template }: RenderArgs): Promise<void> {
-  const args: string[] = [];
-
-  if (template) {
-    const themePath = join(TEMPLATES_DIR, "pptx", `${template}.css`);
-    if (existsSync(themePath)) {
-      args.push("--theme-set", join(TEMPLATES_DIR, "pptx"));
-      args.push("--theme", template);
-    }
-  }
-
-  args.push("--pptx", "-o", outputPath, inputPath);
-  // Marp expects MD with marp directives; we trust pandoc-flavored MD will mostly work
-  // for plain slide decks. For advanced layouts, the input should already be Marp-flavored.
-  await execa("marp", args, { env: { ...process.env, CHROME_PATH: "/usr/bin/chromium" } });
+  const args = ["-f", "markdown", "-t", "pptx", "-o", outputPath];
+  const ref = template ? templatePath("pptx", template, "pptx") : undefined;
+  if (ref) args.push("--reference-doc", ref);
+  args.push(inputPath);
+  await execa("pandoc", args);
 }
