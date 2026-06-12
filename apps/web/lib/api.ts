@@ -26,18 +26,6 @@ export interface CastFileResponse {
 
 export const DEFAULT_DEV_KEY = "cd_dev_changeme";
 
-export function getApiKey(): string {
-  if (typeof window === "undefined") return DEFAULT_DEV_KEY;
-  return window.localStorage.getItem("cd_api_key") || DEFAULT_DEV_KEY;
-}
-
-export function setApiKey(key: string): void {
-  if (typeof window === "undefined") return;
-  if (key.trim()) window.localStorage.setItem("cd_api_key", key.trim());
-  else window.localStorage.removeItem("cd_api_key");
-  window.dispatchEvent(new CustomEvent("cd:api-key-changed"));
-}
-
 // Sin X-API-Key: el middleware Vercel inyecta Authorization server-side.
 // Si se enviase X-API-Key desde browser, la gateway lo leería primero (auth.ts)
 // y anularía la inyección segura del middleware. Mantener vacío.

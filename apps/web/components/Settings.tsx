@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { DEFAULT_DEV_KEY, getApiKey, setApiKey, validateKey, type WhoAmI } from "../lib/api";
+import { DEFAULT_DEV_KEY, validateKey, type WhoAmI } from "../lib/api";
 import { log } from "../lib/activity";
 
 interface Props {
@@ -16,7 +16,7 @@ export function SettingsModal({ open, onClose }: Props) {
 
   useEffect(() => {
     if (!open) return;
-    setKey(getApiKey());
+    setKey("");
     setResult(null);
     setErr(null);
   }, [open]);
@@ -47,26 +47,13 @@ export function SettingsModal({ open, onClose }: Props) {
     }
   }
 
-  function save() {
-    setApiKey(key);
-    log("inf", `KEY SAVED · ${maskKey(key)}`);
-    onClose();
-  }
-
-  function clearKey() {
-    setKey("");
-    setApiKey("");
-    setResult(null);
-    log("inf", "KEY CLEARED · using dev default");
-  }
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 fadein"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="API key settings"
+      aria-label="Verify API key"
     >
       <div
         className="bg-bg border-2 border-ink w-[min(560px,calc(100vw-2rem))] shadow-[8px_8px_0_0_rgba(11,11,11,0.18)]"
@@ -74,14 +61,14 @@ export function SettingsModal({ open, onClose }: Props) {
       >
         <div className="sec-head">
           <div className="num">⚙</div>
-          <div className="ttl">api key <span className="arr">·</span> settings</div>
+          <div className="ttl">verify api key</div>
           <div className="right-meta">
             <button onClick={onClose} className="uppercase text-[11px] font-bold hover:bg-ink hover:text-bg px-1.5">esc · close</button>
           </div>
         </div>
 
         <div className="p-4 flex flex-col gap-3">
-          <label className="text-[11px] uppercase font-bold text-mute">X-API-Key</label>
+          <label className="text-[11px] uppercase font-bold text-mute">X-API-Key to verify</label>
           <input
             type="text"
             value={key}
@@ -92,14 +79,8 @@ export function SettingsModal({ open, onClose }: Props) {
           />
 
           <div className="flex gap-2">
-            <button className="btn" onClick={test} disabled={testing || !key.trim()}>
-              {testing ? "TESTING…" : "TEST"}
-            </button>
-            <button className="btn primary" onClick={save} disabled={testing}>
-              SAVE
-            </button>
-            <button className="btn" onClick={clearKey} disabled={testing}>
-              RESET
+            <button className="btn" onClick={test} disabled={testing}>
+              {testing ? "TESTING…" : "VERIFY"}
             </button>
           </div>
 
@@ -120,8 +101,8 @@ export function SettingsModal({ open, onClose }: Props) {
           )}
 
           <p className="text-[10px] text-mute leading-relaxed mt-1">
-            Stored in <code className="font-bold">localStorage.cd_api_key</code>. Sent as <code className="font-bold">X-API-Key</code> on every request.
-            Empty = fallback to dev key <code className="font-bold">{DEFAULT_DEV_KEY}</code>.
+            Your API key is injected server-side by the gateway — it is never stored in the browser.
+            Use this field to verify connectivity only. Leave empty to test with the dev key <code className="font-bold">{DEFAULT_DEV_KEY}</code>.
           </p>
         </div>
       </div>
@@ -138,8 +119,3 @@ function Row({ k, v }: { k: string; v: React.ReactNode }) {
   );
 }
 
-function maskKey(k: string): string {
-  if (!k) return "(empty → dev default)";
-  if (k.length <= 8) return k.slice(0, 2) + "***";
-  return k.slice(0, 4) + "…" + k.slice(-3);
-}

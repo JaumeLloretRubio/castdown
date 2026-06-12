@@ -15,7 +15,8 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
+import { tmpdir } from "node:os";
 import { z } from "zod";
 
 const API_URL = (process.env.CASTDOWN_API_URL ?? "http://localhost:3001").replace(/\/$/, "");
@@ -160,7 +161,7 @@ async function callRenderMd(args: unknown) {
   });
   const buf = Buffer.from(await res.arrayBuffer());
 
-  const out = a.output_path ?? `/tmp/castdown-${Date.now()}.${a.target}`;
+  const out = a.output_path ?? join(tmpdir(), `castdown-${Date.now()}.${a.target}`);
   await mkdir(dirname(out), { recursive: true });
   await writeFile(out, buf);
 
@@ -193,7 +194,7 @@ async function callCrawl(args: unknown) {
   const buf = Buffer.from(await res.arrayBuffer());
 
   const host = (() => { try { return new URL(a.url).hostname; } catch { return "crawl"; } })();
-  const out = a.output_path ?? `/tmp/castdown-${host}-${Date.now()}.zip`;
+  const out = a.output_path ?? join(tmpdir(), `castdown-${host}-${Date.now()}.zip`);
   await mkdir(dirname(out), { recursive: true });
   await writeFile(out, buf);
   return { output_path: out, size_bytes: buf.length, root_url: a.url };

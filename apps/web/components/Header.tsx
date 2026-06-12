@@ -3,16 +3,18 @@ import { useEffect, useState } from "react";
 import { getHealth } from "../lib/api";
 import { SettingsModal } from "./Settings";
 
-export function Header() {
-  const [tick, setTick] = useState(0);
-  const [online, setOnline] = useState(true);
-  const [latency, setLatency] = useState(0);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+const GITHUB_URL = "https://github.com/JaumeLloretRubio/castdown";
 
-  useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 1000);
-    return () => clearInterval(id);
-  }, []);
+const NAV: { label: string; href: string; external?: boolean }[] = [
+  { label: "API", href: "#api" },
+  { label: "MCP", href: "#mcp" },
+  { label: "GitHub ↗", href: GITHUB_URL, external: true },
+];
+
+export function Header() {
+  const [online, setOnline] = useState<boolean | null>(null);
+  const [latency, setLatency] = useState<number | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -24,7 +26,10 @@ export function Header() {
         setOnline(r.status === "ok" || r.status === "degraded");
         setLatency(Date.now() - t0);
       } catch {
-        if (!cancelled) setOnline(false);
+        if (!cancelled) {
+          setOnline(false);
+          setLatency(null);
+        }
       }
     }
     probe();
@@ -43,17 +48,20 @@ export function Header() {
         <div className="flex items-center px-3.5 gap-3.5 text-[11px] text-mute">
           <span className="flex items-center">
             <span className={"inline-block w-2 h-2 mr-1.5 blink " + (online ? "bg-red" : "bg-mute")} />
-            EDGE · WORKERS · {online ? "ONLINE" : "OFFLINE"}
+            API · {online === null ? "CHECKING" : online ? "ONLINE" : "OFFLINE"}
           </span>
           <span>·</span>
-          <span>LATENCY <b className="text-ink">{latency || 142 + (tick % 17)}ms</b></span>
-          <span>·</span>
-          <span>QUEUE <b className="text-ink">{tick % 4}</b></span>
+          <span>LATENCY <b className="text-ink">{latency === null ? "—" : `${latency}ms`}</b></span>
         </div>
         <nav className="flex items-stretch h-11">
-          {["Docs", "API", "MCP", "GitHub ↗"].map((label) => (
-            <a key={label} href="#" className="flex items-center px-3.5 border-l-2 border-ink uppercase tracking-wide text-xs font-semibold text-ink hover:bg-ink hover:text-bg">
-              {label}
+          {NAV.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className="flex items-center px-3.5 border-l-2 border-ink uppercase tracking-wide text-xs font-semibold text-ink hover:bg-ink hover:text-bg"
+            >
+              {item.label}
             </a>
           ))}
           <button

@@ -16,6 +16,7 @@ export interface RenderArgs {
 
 export function templatePath(target: string, template: string, ext: string): string | undefined {
   const p = join(TEMPLATES_DIR, target, `${template}.${ext}`);
+  if (!resolve(p).startsWith(resolve(TEMPLATES_DIR) + "/") && !resolve(p).startsWith(resolve(TEMPLATES_DIR) + "\\")) return undefined;
   return existsSync(p) ? p : undefined;
 }
 

@@ -18,8 +18,8 @@ describe("stripDocxArtifacts", () => {
     expect(stripDocxArtifacts("[obsoleto]{.strikethrough}")).toBe("~~obsoleto~~");
   });
 
-  it("replaces &nbsp; with space", () => {
-    expect(stripDocxArtifacts("valor:&nbsp;42")).toBe("valor: 42");
+  it("does not modify &nbsp; (now handled by decodeHtmlEntities upstream)", () => {
+    expect(stripDocxArtifacts("valor:&nbsp;42")).toBe("valor:&nbsp;42");
   });
 
   it("removes pandoc hard line-break backslash", () => {

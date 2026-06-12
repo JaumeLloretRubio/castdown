@@ -13,30 +13,30 @@ const OUT_FORMATS = [
   { ext: "PDF",  sub: "typst" },
   { ext: "TEX",  sub: "latex" },
   { ext: "DOCX", sub: "pandoc" },
-  { ext: "PPTX", sub: "marp" },
+  { ext: "PPTX", sub: "pandoc" },
   { ext: "HTML", sub: "standalone" },
   { ext: "EPUB", sub: "e-reader" },
 ];
 
-const SAMPLE_MD = `# Reporte Q3 — Operaciones
+const SAMPLE_MD = `# castdown — sample document
 
-Resumen ejecutivo del trimestre. **Crecimiento interanual** del 23 %, con foco en la
-expansión EU.
+This is a **sample Markdown file** to try the render pipeline. Edit it freely,
+pick an output target below and hit render.
 
-## Hitos
-1. Lanzamiento de la API pública
-2. Integración MCP con Claude, Cursor y Windsurf
-3. Self-hosting via Docker
+## What you can do
+1. Convert any file to Markdown
+2. Render Markdown to PDF, DOCX, PPTX, HTML, EPUB or LaTeX
+3. Crawl a site into a tree of linked .md files
 
-## Métricas
+## Output targets
 
-| KPI            | Q2     | Q3     | Δ      |
-|----------------|--------|--------|--------|
-| Conversiones   | 84,210 | 142,580| +69 %  |
-| API keys       | 412    | 1,031  | +150 % |
-| Pages crawled  | 1.2 M  | 3.8 M  | +217 % |
+| Target | Engine     | Preview |
+|--------|------------|---------|
+| PDF    | typst      | yes     |
+| DOCX   | pandoc     | no      |
+| HTML   | standalone | yes     |
 
-> Las conversiones de PDF dominaron el trimestre con un **62 %** del total.
+> Blockquotes, tables and code blocks all survive the round trip.
 `;
 
 export function FromMd() {
@@ -93,12 +93,12 @@ export function FromMd() {
     const okExt = lower.endsWith(".md") || lower.endsWith(".markdown") || lower.endsWith(".mdx") || lower.endsWith(".txt");
     const okType = !f.type || f.type.startsWith("text/");
     if (!okExt && !okType) {
-      setErr(`Archivo no soportado: ${f.name}`);
+      setErr(`Unsupported file: ${f.name}`);
       log("err", `FromMd reject · ${f.name} · ${f.type || "no-mime"}`);
       return;
     }
     if (f.size > MAX_MD_BYTES) {
-      setErr(`Archivo > 50 MB`);
+      setErr(`File > 50 MB`);
       return;
     }
     try {
@@ -119,7 +119,7 @@ export function FromMd() {
     setPreviewUrl(null);
 
     const tgt = out.toLowerCase();
-    log("inf", `POST /api/cast · md → ${tgt}${template ? ` · tpl=${template}` : ""} · ${lines} líneas`);
+    log("inf", `POST /api/cast · md → ${tgt}${template ? ` · tpl=${template}` : ""} · ${lines} lines`);
     try {
       const blob = await renderMd(md, tgt, template);
       const url = URL.createObjectURL(blob);
@@ -166,7 +166,7 @@ export function FromMd() {
     <div className="border-b-2 border-ink">
       <div className="sec-head">
         <div className="num">02</div>
-        <div className="ttl">.md <span className="arr">→</span> cualquier formato</div>
+        <div className="ttl">.md <span className="arr">→</span> any format</div>
         <div className="right-meta"><span className="pill solid">POST /api/cast</span></div>
       </div>
 
@@ -198,7 +198,7 @@ export function FromMd() {
         />
         {over && (
           <div className="absolute inset-0 pointer-events-none flex items-center justify-center bg-ink/85 text-bg uppercase font-extrabold tracking-wider text-[14px]">
-            suelta tu .md aquí
+            drop your .md here
           </div>
         )}
       </div>
@@ -225,7 +225,7 @@ export function FromMd() {
         </div>
         <div className="px-3 py-1.5 flex items-center gap-2">
           {availableTemplates.length === 0 ? (
-            <span className="text-[11px] text-mute italic">— sin templates para .{out.toLowerCase()} (pandoc default)</span>
+            <span className="text-[11px] text-mute italic">— no templates for .{out.toLowerCase()} (pandoc default)</span>
           ) : (
             <>
               <select
@@ -239,7 +239,7 @@ export function FromMd() {
                   </option>
                 ))}
               </select>
-              <span className="text-[10px] text-mute">{availableTemplates.length} disponible{availableTemplates.length === 1 ? "" : "s"}</span>
+              <span className="text-[10px] text-mute">{availableTemplates.length} available</span>
             </>
           )}
         </div>
@@ -255,14 +255,14 @@ export function FromMd() {
           }
         >
           <span>
-            {tableWarning.level === "severe" ? "⚠ tablas" : "ℹ tablas"} · {tableWarning.message}
+            {tableWarning.level === "severe" ? "⚠ tables" : "ℹ tables"} · {tableWarning.message}
           </span>
           {tableWarning.suggestion && (
             <button
               onClick={() => setTemplate(tableWarning.suggestion)}
               className="bg-ink text-bg px-2 py-0.5 hover:bg-red hover:text-bg transition-colors"
             >
-              usar &quot;{tableWarning.suggestion}&quot; →
+              use &quot;{tableWarning.suggestion}&quot; →
             </button>
           )}
         </div>

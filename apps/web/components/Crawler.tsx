@@ -60,7 +60,7 @@ export function Crawler() {
     <section className="border-b-2 border-ink">
       <div className="sec-head">
         <div className="num">03</div>
-        <div className="ttl">url <span className="arr">→</span> árbol de .md</div>
+        <div className="ttl">url <span className="arr">→</span> .md tree</div>
         <div className="right-meta"><span className="pill solid">POST /api/crawl</span></div>
       </div>
 
@@ -96,7 +96,7 @@ export function Crawler() {
 
       <div className="grid grid-cols-[1fr_320px] min-h-[320px]">
         <pre ref={treeRef} className="px-4 py-3.5 text-[12px] leading-[1.55] whitespace-pre overflow-auto bg-paper border-r-2 border-ink m-0">
-{tree || (busy ? "crawling…\n" : "// resultado aparecerá aquí tras crawlear\n// p.ej.\ndocs/\n├── index.md\n├── getting-started.md\n└── api/\n    ├── auth.md\n    └── endpoints.md\n")}
+{tree || (busy ? "crawling…\n" : "// result will appear here after crawling\n// e.g.\ndocs/\n├── index.md\n├── getting-started.md\n└── api/\n    ├── auth.md\n    └── endpoints.md\n")}
         </pre>
         <div className="px-4 py-3.5 flex flex-col gap-2.5 text-[11px]">
           <div className="uppercase font-bold text-[11px] -mb-1">// status</div>
@@ -129,7 +129,7 @@ export function Crawler() {
               ↓ DOWNLOAD .ZIP
             </button>
             <div className="text-[10px] uppercase tracking-wider text-mute text-center">
-              links internos preservados como <b>[ ](./ruta.md)</b>
+              internal links preserved as <b>[ ](./path.md)</b>
             </div>
           </div>
         </div>

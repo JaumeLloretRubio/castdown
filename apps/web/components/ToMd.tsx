@@ -10,8 +10,8 @@ const IN_FORMATS = [
   { ext: "XLSX", sub: "sheet"      },
   { ext: "EPUB", sub: "e-book"     },
   { ext: "HTML", sub: "web"        },
-  { ext: "PNG",  sub: "ocr"        },
-  { ext: "WAV",  sub: "whisper"    },
+  { ext: "PNG",  sub: "image"      },
+  { ext: "WAV",  sub: "speech"     },
   { ext: "CSV",  sub: "table"      },
   { ext: "RST",  sub: "docs"       },
   { ext: "ODT",  sub: "openoffice" },
@@ -102,7 +102,7 @@ export function ToMd() {
     <div className="border-r-2 border-ink border-b-2">
       <div className="sec-head">
         <div className="num">01</div>
-        <div className="ttl">cualquier archivo <span className="arr">→</span> .md</div>
+        <div className="ttl">any file <span className="arr">→</span> .md</div>
         <div className="right-meta">
           <span className="pill solid">POST /api/cast</span>
           <span className="pill">multipart</span>
@@ -129,8 +129,8 @@ export function ToMd() {
 
         {phase === "idle" && (
           <>
-            <div className="text-[22px] font-extrabold uppercase mb-2">arrastra un archivo aquí</div>
-            <div className="text-mute">o haz click para subir · drop, click, listo · max 50 MB</div>
+            <div className="text-[22px] font-extrabold uppercase mb-2">drag a file here</div>
+            <div className="text-mute">or click to upload · drop, click, done · max 50 MB</div>
             <div className="mt-4 text-[11px]">
               <span className="text-mute">accepts:</span>{" "}
               {IN_FORMATS.map((f) => f.ext).join(" · ")}
@@ -193,7 +193,7 @@ export function ToMd() {
       <div className="grid grid-cols-[1fr_auto_auto_auto] border-t-2 border-ink">
         <div className="px-3 py-2.5 text-[11px] text-mute border-r-2 border-ink flex items-center">
           <span className="text-mute">engine:</span>&nbsp;<b>MarkItDown</b>&nbsp;·&nbsp;
-          <span className="text-mute">cleaners:</span>&nbsp;<b>10 + remark</b>
+          <span className="text-mute">cleaners:</span>&nbsp;<b>29 passes</b>
         </div>
         <button className="btn" onClick={(e) => { e.stopPropagation(); trySample(); }}>Try sample.html</button>
         <button className="btn" onClick={pick}>Choose file</button>

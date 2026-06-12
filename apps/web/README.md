@@ -20,10 +20,9 @@ nunca envía la key.
 - En Vercel deploy → setea `CASTDOWN_API_KEY` en project env vars (NO prefijo
   `NEXT_PUBLIC_`, debe ser server-only).
 
-`SettingsModal` sigue presente pero su rol cambia: el botón TEST valida una key
-candidata contra la gateway; el botón SAVE persiste en `localStorage` pero ya
-NO afecta las llamadas reales (middleware ignora localStorage). Útil sólo para
-probar claves antes de moverlas a Vercel env.
+`SettingsModal` ("Verify API Key"): permite validar una key candidata contra la
+gateway. No persiste nada en localStorage — solo envía `X-API-Key` para probar
+conectividad. Las llamadas reales usan siempre la key inyectada por middleware.
 
 ## Architecture
 - `app/page.tsx` — single landing page composing all sections.

@@ -61,7 +61,7 @@ export function parseMdTables(md: string): TableInfo[] {
     maxCell = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    const line = lines[i] ?? "";
     if (!inTable) {
       const next = lines[i + 1] ?? "";
       if (isPipeRow(line) && isSeparator(next)) {
@@ -130,8 +130,8 @@ export function analyzeTablesForTemplate(
     count,
     message:
       level === "severe"
-        ? `${count} tabla${count > 1 ? "s" : ""} con celdas muy largas no van a caber bien en "${tpl}".`
-        : `${count} tabla${count > 1 ? "s" : ""} con celdas largas pueden hacer wrap fuerte en "${tpl}".`,
+        ? `${count} table${count > 1 ? "s" : ""} with very long cells will not fit well in "${tpl}".`
+        : `${count} table${count > 1 ? "s" : ""} with long cells may wrap heavily in "${tpl}".`,
     suggestion,
   };
 }

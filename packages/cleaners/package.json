@@ -1,16 +1,43 @@
 {
   "name": "@castdown/cleaners",
-  "version": "0.1.0-alpha",
-  "private": true,
+  "version": "0.1.0",
+  "description": "Composable Markdown post-processing pipeline for MarkItDown, Docling, Pandoc, and LlamaParse output.",
   "type": "module",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "test": "vitest",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "pnpm build && pnpm test --run"
+  },
+  "keywords": [
+    "markdown",
+    "cleaner",
+    "pipeline",
+    "pdf",
+    "docx",
+    "rag",
+    "markitdown",
+    "docling",
+    "pandoc"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/castdown/castdown",
+    "directory": "packages/cleaners"
   },
   "dependencies": {
     "remark": "^15.0.1",
@@ -22,5 +49,8 @@
     "@types/node": "^22.7.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

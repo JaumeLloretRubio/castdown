@@ -10,21 +10,21 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 const SAMPLES: Record<Tab, string> = {
-  curl: `# 1. Cualquier archivo → markdown
+  curl: `# 1. Any file → markdown
 curl -X POST http://localhost:3001/api/cast \\
   -H "X-API-Key: cd_dev_changeme" \\
-  -F "file=@reporte.pdf"
+  -F "file=@report.pdf"
 
 # 2. Markdown → PDF (typst engine)
 curl -X POST http://localhost:3001/api/cast \\
   -H "X-API-Key: cd_dev_changeme" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "markdown": "# Hola castdown",
+    "markdown": "# Hello castdown",
     "target": "pdf"
   }' --output out.pdf
 
-# 3. Crawl recursivo + ZIP de .md
+# 3. Recursive crawl + ZIP of .md
 curl -X POST http://localhost:3001/api/crawl \\
   -H "X-API-Key: cd_dev_changeme" \\
   -H "Content-Type: application/json" \\
@@ -66,7 +66,7 @@ KEY = "cd_dev_changeme"
 H   = {"X-API-Key": KEY}
 
 # 1. file → md
-with open("reporte.pdf", "rb") as f:
+with open("report.pdf", "rb") as f:
     r = httpx.post(f"{API}/api/cast", headers=H, files={"file": f})
     md = r.json()["markdown"]
 
@@ -99,10 +99,10 @@ const MCP_CONFIG = `{
 }`;
 
 const MCP_TOOLS = [
-  { name: "cast_file",       desc: "* → .md desde un path local" },
+  { name: "cast_file",       desc: "* → .md from a local path" },
   { name: "render_markdown", desc: ".md → pdf/docx/html/pptx/epub" },
-  { name: "fetch_page",      desc: "URL única → .md limpio (Readability + Turndown)" },
-  { name: "crawl_url",       desc: "URL → ZIP de .md enlazados con TOC" },
+  { name: "fetch_page",      desc: "single URL → clean .md (Readability + Turndown)" },
+  { name: "crawl_url",       desc: "URL → ZIP of linked .md with TOC" },
 ];
 
 export function ApiMcp() {
@@ -118,13 +118,12 @@ export function ApiMcp() {
   return (
     <section className="grid grid-cols-2 border-b-2 border-ink">
       {/* ── Left: HTTP API ──────────────────────────── */}
-      <div className="border-r-2 border-ink">
+      <div id="api" className="border-r-2 border-ink scroll-mt-20">
         <div className="sec-head">
           <div className="num">04</div>
-          <div className="ttl">api rest <span className="arr">·</span> http</div>
+          <div className="ttl">rest api <span className="arr">·</span> http</div>
           <div className="right-meta">
-            <span className="pill solid">localhost:3001</span>
-            <span className="pill red">LIVE</span>
+            <span className="pill solid">self-host</span>
           </div>
         </div>
 
@@ -156,10 +155,10 @@ export function ApiMcp() {
       </div>
 
       {/* ── Right: MCP Server ───────────────────────── */}
-      <div>
+      <div id="mcp" className="scroll-mt-20">
         <div className="sec-head">
           <div className="num">05</div>
-          <div className="ttl">mcp server <span className="arr">·</span> agentes</div>
+          <div className="ttl">mcp server <span className="arr">·</span> agents</div>
           <div className="right-meta">
             <span className="pill solid">stdio</span>
             <span className="pill">claude · cursor · windsurf</span>
@@ -182,7 +181,7 @@ export function ApiMcp() {
         </div>
 
         <div className="px-4 py-3">
-          <div className="text-[11px] uppercase tracking-wider font-bold mb-2 text-mute">// herramientas expuestas</div>
+          <div className="text-[11px] uppercase tracking-wider font-bold mb-2 text-mute">// exposed tools</div>
           {MCP_TOOLS.map((t) => (
             <div key={t.name} className="grid grid-cols-[140px_1fr] gap-2 py-1 border-b border-[rgba(11,11,11,0.18)] last:border-b-0 text-[12px]">
               <span className="font-bold tabular-nums">{t.name}</span>

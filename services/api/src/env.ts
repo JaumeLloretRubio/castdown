@@ -8,7 +8,13 @@ const schema = z.object({
   API_HOST: z.string().default("0.0.0.0"),
   API_PUBLIC_URL: z.string().url().default("http://localhost:3001"),
 
-  API_KEYS: z.string().default("cd_dev_changeme"),
+  API_KEYS: z
+    .string()
+    .default("cd_dev_changeme")
+    .refine(
+      (v) => process.env.NODE_ENV !== "production" || !v.split(",").map((k) => k.trim()).includes("cd_dev_changeme"),
+      { message: "API_KEYS must not contain cd_dev_changeme in production" },
+    ),
   RATE_LIMIT_PER_MINUTE: z.coerce.number().default(60),
 
   // CORS allowlist (comma-separated). Default cubre dev local; en prod añadir el dominio Vercel.

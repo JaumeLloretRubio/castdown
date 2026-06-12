@@ -32,9 +32,6 @@ export function stripDocxArtifacts(md: string): string {
   // Pandoc hard line-break: trailing "\ " before newline
   out = out.replace(/\\ $/gm, "");
 
-  // &nbsp; → regular space (common in copy-pasted DOCX content)
-  out = out.replace(/&nbsp;/g, " ");
-
   // <!-- {.someclass} --> inline comments from div-fence conversion
   out = out.replace(/<!--\s*\{[^}]+\}\s*-->/g, "");
 

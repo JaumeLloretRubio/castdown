@@ -4,13 +4,13 @@
 
 Self-hostable conversion toolkit: `* → .md`, `.md → *`, `URL → tree of .md`, plus an MCP server for agents.
 
-**Status:** `0.1.0-alpha` — scaffolding phase. Nothing runs end-to-end yet.
+**Status:** `0.1.0` — all services operational. E2E validated locally.
 
 ## What's here
 ```
 castdown/
 ├── apps/
-│   └── web/                  Next.js frontend (planned)
+│   └── web/                  Next.js 15 frontend
 ├── services/
 │   ├── api/                  Hono gateway — auth, rate limit, routing
 │   ├── markitdown/           Python FastAPI + MarkItDown (file → md)
@@ -53,7 +53,7 @@ Arquitectura: stack en Pi de casa, UI en Vercel free, conexión via Tailscale Fu
 
 ### En la Pi
 ```bash
-git clone https://github.com/<tu-usuario>/castdown ~/castdown
+git clone https://github.com/JaumeLloretRubio/castdown ~/castdown
 bash ~/castdown/infra/scripts/install-pi.sh
 ```
 
@@ -97,10 +97,10 @@ Mismo `docker-compose.yml`. `docker compose --profile cloud up -d --build` levan
 - **Queue:** Redis (BullMQ planned)
 - **DB:** SQLite (Litestream optional) → Postgres at scale
 - **Storage:** filesystem with TTL cleanup
-- **Frontend:** Next.js 15 (planned)
+- **Frontend:** Next.js 15
 
 ## Roadmap
 See [`docs/roadmap.md`](docs/roadmap.md).
 
 ## License
-TBD.
+Apache 2.0 — see [LICENSE](LICENSE).

@@ -37,5 +37,5 @@ export function LiveLog() {
 
 function fmtTime(ts: number): string {
   const d = new Date(ts);
-  return d.toLocaleTimeString("es", { hour12: false });
+  return d.toLocaleTimeString("en-GB", { hour12: false });
 }
