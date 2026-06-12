@@ -21,6 +21,10 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/services/api/node_modules ./services/api/node_modules
 COPY tsconfig.base.json ./
 COPY packages ./packages
+# Workspace packages resolve to src/ in-repo, so their runtime deps
+# (e.g. cleaners → remark/unified) must ship from the builder's node_modules.
+COPY --from=builder /app/packages/cleaners/node_modules ./packages/cleaners/node_modules
+COPY --from=builder /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY services/api ./services/api
 WORKDIR /app/services/api
 ENV NODE_ENV=production
