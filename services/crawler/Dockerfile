@@ -1,5 +1,7 @@
-# Playwright official image — chromium preinstalled with deps
-FROM mcr.microsoft.com/playwright:v1.47.0-jammy
+# Playwright official image — chromium preinstalled with deps.
+# Must match the playwright version pinned in services/crawler/package.json,
+# or the bundled browser binaries won't exist (BrowserLaunchError).
+FROM mcr.microsoft.com/playwright:v1.59.1-jammy
 
 RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
 
