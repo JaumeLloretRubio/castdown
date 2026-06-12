@@ -61,6 +61,9 @@ services:
     environment:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-50}
+      # PDF word-gap detection. Raise toward ~0.3 if words run together in
+      # LaTeX PDFs; lower / set "off" if words get split mid-word.
+      PDF_X_TOLERANCE_RATIO: ${PDF_X_TOLERANCE_RATIO:-0.2}
     expose:
       - "8001"
 

@@ -14,11 +14,40 @@ pulled in transitively by markitdown[all]) + Pillow + pypdfium2.
 from __future__ import annotations
 
 import logging
+import os
 from typing import List, Optional, Sequence
 
 import pdfplumber
 
 log = logging.getLogger("markitdown-svc.pdf")
+
+
+def _extract_kwargs() -> dict:
+    """
+    pdfminer/pdfplumber drop inter-word spaces on PDFs that position glyphs
+    without explicit space characters (notably LaTeX / Computer Modern). The
+    fixed default x_tolerance=3pt then fails to mark word gaps, so words run
+    together ("Alfinalizar"). x_tolerance_ratio scales the gap threshold by
+    character height, recovering those spaces across font sizes.
+
+    Tunable per deployment via PDF_X_TOLERANCE_RATIO:
+      - a float (e.g. "0.2") → use as ratio
+      - "off"/"0"/empty      → restore pdfplumber's default behaviour
+    """
+    raw = os.getenv("PDF_X_TOLERANCE_RATIO", "0.2").strip().lower()
+    if raw in ("", "off", "none", "default"):
+        return {}
+    try:
+        return {"x_tolerance_ratio": float(raw)}
+    except ValueError:
+        return {"x_tolerance_ratio": 0.2}
+
+
+_EXTRACT_KW = _extract_kwargs()
+
+
+def _extract(obj) -> str:
+    return obj.extract_text(**_EXTRACT_KW) or ""
 
 
 def pdf_to_markdown(path: str) -> str:
@@ -30,7 +59,7 @@ def pdf_to_markdown(path: str) -> str:
                 rendered = _render_page(page)
             except Exception as e:  # noqa: BLE001 — fall back to plain text on any pdfplumber edge case
                 log.warning("page %d render failed (%s) — falling back to plain text", idx, e)
-                rendered = page.extract_text() or ""
+                rendered = _extract(page)
             if rendered and rendered.strip():
                 parts.append(rendered)
     return "\n\n".join(parts)
@@ -40,7 +69,7 @@ def _render_page(page) -> str:
     tables = page.find_tables() or []
     real_tables = [t for t in tables if _is_real_table(t.extract())]
     if not real_tables:
-        return page.extract_text() or ""
+        return _extract(page)
 
     real_tables.sort(key=lambda t: t.bbox[1])  # by top-y
 
@@ -71,7 +100,7 @@ def _render_page(page) -> str:
 def _crop_text(page, x0: float, top: float, x1: float, bottom: float) -> str:
     try:
         cropped = page.crop((x0, top, x1, bottom), relative=False, strict=False)
-        return (cropped.extract_text() or "").strip()
+        return _extract(cropped).strip()
     except Exception:  # noqa: BLE001
         return ""
 
