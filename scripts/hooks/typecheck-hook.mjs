@@ -8,7 +8,7 @@ const WORKSPACES = [
   ["services/api", "@castdown/api"],
   ["services/pandoc", "@castdown/pandoc-svc"],
   ["services/crawler", "@castdown/crawler-svc"],
-  ["packages/cleaners", "@castdown/cleaners"],
+  ["packages/cleaners", "castdown-cleaners"],
   ["packages/mcp", "castdown-mcp"],
   ["packages/shared", "@castdown/shared"],
   ["packages/storage", "@castdown/storage"],

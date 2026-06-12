@@ -22,12 +22,12 @@ const PACKAGES: Pkg[] = [
     exports: ["cast_file", "render_markdown", "fetch_page", "crawl_url"],
   },
   {
-    name: "@castdown/cleaners",
+    name: "castdown-cleaners",
     registry: "npm",
     license: "Apache-2.0",
-    install: "npm i @castdown/cleaners",
+    install: "npm i castdown-cleaners",
     desc: "Composable Markdown post-processing pipeline. Dirty parser output in, clean GFM out. Every pass is named and skippable.",
-    npm: "https://www.npmjs.com/package/@castdown/cleaners",
+    npm: "https://www.npmjs.com/package/castdown-cleaners",
     exports: ["clean()", "29 regex + remark passes"],
   },
 ];

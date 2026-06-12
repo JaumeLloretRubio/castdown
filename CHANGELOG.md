@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- `@castdown/cleaners` v0.1.0 — 29-step Markdown post-processing pipeline
+- `castdown-cleaners` v0.1.0 — 29-step Markdown post-processing pipeline
   - 14 new cleaners: `decodeHtmlEntities`, `fixLigatures`, `stripHtmlArtifacts`, `stripEmptyHeadings`, `normalizeHorizontalRules`, `normalizeListMarkers`, `normalizeNumberedLists`, `collapseRedundantEmphasis`, `stripUrlTrackingParams`, `fixFootnoteMarkers`, `annotateFiguresTables`, `stripBoilerplate`, `normalizeWhitespaceInLines`, `extractMetadataFrontmatter`
   - Shared `withProtectedCode()` utility for code-block-safe transformations
   - Pipeline refactored from parallel arrays to `PipelineStep[]` object form
@@ -24,7 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - `SettingsModal`: simplified to "Verify API Key" — removed SAVE/RESET buttons and localStorage persistence; key is now injected server-side by middleware, not stored in browser
-- `@castdown/cleaners`: removed dead `&nbsp;` replacement from `stripDocxArtifacts` (now handled by `decodeHtmlEntities` upstream in the pipeline)
+- `castdown-cleaners`: removed dead `&nbsp;` replacement from `stripDocxArtifacts` (now handled by `decodeHtmlEntities` upstream in the pipeline)
 
 ---
 

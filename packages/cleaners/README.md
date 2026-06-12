@@ -1,6 +1,6 @@
-# @castdown/cleaners
+# castdown-cleaners
 
-[![npm](https://img.shields.io/npm/v/@castdown/cleaners)](https://www.npmjs.com/package/@castdown/cleaners)
+[![npm](https://img.shields.io/npm/v/castdown-cleaners)](https://www.npmjs.com/package/castdown-cleaners)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 Composable Markdown post-processing pipeline. Fixes the dirty output that PDF parsers, DOCX converters, and web crawlers produce before it reaches your LLM or RAG pipeline.
@@ -13,16 +13,16 @@ Composable Markdown post-processing pipeline. Fixes the dirty output that PDF pa
 
 PDF parsers produce ligatures (`ﬁgure` instead of `figure`), broken bullets (`•`), superscript footnotes (`¹`), and HTML entity noise (`&amp;`). DOCX converters leave span artifacts and `{.underline}` syntax. Web crawlers embed UTM tracking params. LLMs and vector databases see all of this as noise — tokens that aren't searchable, chunks that split poorly.
 
-`@castdown/cleaners` applies 29 targeted transformations in a validated pipeline to produce clean, normalized Markdown ready for downstream use.
+`castdown-cleaners` applies 29 targeted transformations in a validated pipeline to produce clean, normalized Markdown ready for downstream use.
 
 ---
 
 ## Install
 
 ```bash
-npm install @castdown/cleaners
+npm install castdown-cleaners
 # or
-pnpm add @castdown/cleaners
+pnpm add castdown-cleaners
 ```
 
 ---
@@ -30,7 +30,7 @@ pnpm add @castdown/cleaners
 ## Quick start
 
 ```typescript
-import { clean } from "@castdown/cleaners";
+import { clean } from "castdown-cleaners";
 
 const raw = `AT&amp;T Q4 Report\n\n• Revenue grew 15%\n◦ Digital: +22%\n\nﬁgure 1 shows ﬂow of ﬁnancial data.\n\n¹ Preliminary data only`;
 
@@ -57,7 +57,7 @@ console.log(applied);
 
 ```typescript
 import { markitdown } from "markitdown"; // your MarkItDown wrapper
-import { clean } from "@castdown/cleaners";
+import { clean } from "castdown-cleaners";
 
 const raw = await markitdown.convert("report.pdf");
 const { markdown } = await clean(raw, { source: "pdf" });
@@ -66,7 +66,7 @@ const { markdown } = await clean(raw, { source: "pdf" });
 ## Usage with Docling
 
 ```typescript
-import { clean } from "@castdown/cleaners";
+import { clean } from "castdown-cleaners";
 
 // Docling output typically comes from HTML conversion path
 const raw = await doclingClient.convert("document.pdf");
@@ -76,7 +76,7 @@ const { markdown } = await clean(raw.markdown, { source: "pdf" });
 ## Usage with Pandoc / LlamaParse output
 
 ```typescript
-import { clean } from "@castdown/cleaners";
+import { clean } from "castdown-cleaners";
 
 // DOCX via Pandoc
 const { markdown } = await clean(pandocOutput, { source: "docx" });
@@ -121,7 +121,7 @@ import {
   normalizeListMarkers,
   stripUrlTrackingParams,
   // ... all 29 cleaners
-} from "@castdown/cleaners";
+} from "castdown-cleaners";
 
 const fixed = fixLigatures("The ﬁrst ﬁgure shows ﬂow.");
 // "The first figure shows flow."

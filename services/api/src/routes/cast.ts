@@ -1,6 +1,6 @@
 import { Hono, type Context } from "hono";
 import { z } from "zod";
-import { clean } from "@castdown/cleaners";
+import { clean } from "castdown-cleaners";
 import { env } from "../env.js";
 import { logger } from "../logger.js";
 import { createJob, completeJob, failJob } from "../db/repo.js";

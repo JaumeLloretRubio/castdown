@@ -1,5 +1,5 @@
 {
-  "name": "@castdown/cleaners",
+  "name": "castdown-cleaners",
   "version": "0.1.0",
   "description": "Composable Markdown post-processing pipeline for MarkItDown, Docling, Pandoc, and LlamaParse output.",
   "type": "module",

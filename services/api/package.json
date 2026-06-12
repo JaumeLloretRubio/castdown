@@ -12,7 +12,7 @@
     "issue-key": "tsx scripts/issue-key.ts"
   },
   "dependencies": {
-    "@castdown/cleaners": "workspace:*",
+    "castdown-cleaners": "workspace:*",
     "@castdown/shared": "workspace:*",
     "@castdown/storage": "workspace:*",
     "@hono/node-server": "^1.13.0",
