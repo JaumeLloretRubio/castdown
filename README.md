@@ -22,12 +22,13 @@ castdown/
 │   └── shared/               Zod schemas + types
 ├── templates/
 │   ├── pdf/                  Typst templates
-│   ├── docx/                 Pandoc reference-docs
+│   ├── tex/                  LaTeX templates
+│   ├── docx/                 Pandoc reference docs
 │   ├── html/                 Pandoc HTML5 templates
-│   └── pptx/                 Marp CSS themes
+│   ├── epub/                 EPUB templates
+│   └── pptx/                 Marp / pptx themes
 ├── infra/
 │   └── caddy/                Reverse proxy config
-├── docs/                     Architecture + ADRs
 └── docker-compose.yml        Full stack
 ```
 
@@ -98,9 +99,6 @@ Mismo `docker-compose.yml`. `docker compose --profile cloud up -d --build` levan
 - **DB:** SQLite (Litestream optional) → Postgres at scale
 - **Storage:** filesystem with TTL cleanup
 - **Frontend:** Next.js 15
-
-## Roadmap
-See [`docs/roadmap.md`](docs/roadmap.md).
 
 ## License
 Apache 2.0 — see [LICENSE](LICENSE).
