@@ -2,30 +2,43 @@
  * normalizeUnicode — fix misplaced PDF accents + NFC + smart-quote/dash mapping.
  * Idempotent. Run first.
  *
- * pdfminer/pdfplumber emit combining accents ONE base-character too early —
- * before the vowel they belong to: "está" comes out as "est"+U+0301+"a",
- * "duración" as "duraci"+U+0301+"on". Plain NFC can't fix this because the
- * mark is adjacent to the wrong letter. We move each combining mark onto the
- * FOLLOWING letter, but only when that letter can actually carry the accent
- * (so we never push an accent onto a consonant), then NFC composes it.
+ * PDF text extraction (pdfminer/pdfplumber) emits the accent BEFORE the vowel
+ * it belongs to, as either a combining mark ("est"+U+0301+"a") or, more often,
+ * a standalone non-ASCII spacing diacritic ("duraci´on", "electr´onicos").
+ * Neither composes under plain NFC. We move any such accent forward onto the
+ * next letter — but only when that letter has a precomposed accented form, so
+ * an accent is never forced onto a consonant — then NFC composes it.
  *
- * Assumption (holds for pdfminer output): correctly-accented characters arrive
- * pre-composed, so any *combining* mark present is a misplaced artifact.
+ * Only NON-ASCII spacing diacritics are handled; ASCII look-alikes (^ ~ ` ' ")
+ * are Markdown/code syntax and are deliberately left untouched.
  */
 import { withProtectedCode } from "../util/protect-code.js";
 
-// base letter + combining mark(s) + next base letter
-const MISPLACED_RE = /(\p{L})([̀-ͯ]+)(\p{L})/gu;
+// Non-ASCII spacing diacritic → its combining counterpart.
+const SPACING_TO_COMBINING: Readonly<Record<string, string>> = {
+  "´": "́", // ´ acute            → á é í ó ú
+  "ˊ": "́", // ˊ modifier acute
+  "¨": "̈", // ¨ diaeresis        → ä ë ï ö ü
+  "˜": "̃", // ˜ small tilde      → ã ñ õ
+  "ˆ": "̂", // ˆ modifier circumflex → â ê î ô û
+  "¸": "̧", // ¸ cedilla          → ç
+  "ˋ": "̀", // ˋ modifier grave   → à è ì ò ù
+};
 
-function composesToOne(base: string, marks: string): boolean {
-  return (base + marks).normalize("NFC").length === 1;
+const SPACING_CHARS = Object.keys(SPACING_TO_COMBINING).join("");
+// an accent = a combining mark OR one of the spacing diacritics above
+const ACCENT_BEFORE_LETTER = new RegExp(`([̀-ͯ${SPACING_CHARS}])[ \\u00a0]?(\\p{L})`, "gu");
+
+function composesToOne(base: string, mark: string): boolean {
+  return (base + mark).normalize("NFC").length === 1;
 }
 
 export function normalizeUnicode(md: string): string {
   return withProtectedCode(md, (s) => {
-    let out = s.replace(MISPLACED_RE, (full, b1: string, marks: string, b2: string) =>
-      composesToOne(b2, marks) ? b1 + b2 + marks : full,
-    );
+    let out = s.replace(ACCENT_BEFORE_LETTER, (full, acc: string, letter: string) => {
+      const mark = SPACING_TO_COMBINING[acc] ?? acc; // spacing → combining; combining stays
+      return composesToOne(letter, mark) ? letter + mark : full;
+    });
 
     out = out.normalize("NFC");
 
