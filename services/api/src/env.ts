@@ -18,7 +18,30 @@ const schema = z.object({
   RATE_LIMIT_PER_MINUTE: z.coerce.number().default(60),
 
   // CORS allowlist (comma-separated). Default cubre dev local; en prod añadir el dominio Vercel.
-  WEB_ORIGIN: z.string().default("http://localhost:3000"),
+  // Validated: no wildcard, no empty list, every entry a parseable origin —
+  // a misconfigured "*" or "" would otherwise open cross-origin access to the
+  // publicly-reachable gateway.
+  WEB_ORIGIN: z
+    .string()
+    .default("http://localhost:3000")
+    .superRefine((v, ctx) => {
+      const origins = v.split(",").map((s) => s.trim()).filter(Boolean);
+      if (origins.length === 0) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "WEB_ORIGIN must not be empty" });
+        return;
+      }
+      for (const o of origins) {
+        if (o === "*") {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: "WEB_ORIGIN must not be '*' (wildcard CORS)" });
+          continue;
+        }
+        try {
+          new URL(o);
+        } catch {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: `WEB_ORIGIN entry is not a valid origin: ${o}` });
+        }
+      }
+    }),
 
   MARKITDOWN_URL: z.string().url().default("http://markitdown-svc:8001"),
   PANDOC_URL: z.string().url().default("http://pandoc-svc:8002"),

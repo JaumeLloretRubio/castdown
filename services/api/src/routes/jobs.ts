@@ -9,6 +9,13 @@ jobsRoute.get("/:id", (c) => {
   const job = findJob(id);
   if (!job) return c.json({ error: "job_not_found" }, 404);
 
+  // Ownership check: a key may only read its own jobs. Return 404 (not 403) so
+  // job IDs of other keys aren't confirmable. env-keys (apiKeyId === null) see
+  // only null-owned jobs.
+  if (job.api_key_id !== (c.get("apiKeyId") ?? null)) {
+    return c.json({ error: "job_not_found" }, 404);
+  }
+
   return c.json({
     id: job.id,
     kind: job.kind,

@@ -65,6 +65,10 @@ test-results/
 output/
 fixtures-out/
 
+# Source archives (e.g. `git archive` output used to deploy to the Pi)
+*.tar.gz
+*.tgz
+
 # Local-only docs / planning / Claude config (no se publican al repo)
 docs/
 Plan y mockup/

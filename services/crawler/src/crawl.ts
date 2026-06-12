@@ -9,6 +9,7 @@ import { Configuration, PlaywrightCrawler, RequestQueue } from "crawlee";
 import { JSDOM } from "jsdom";
 import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
+import { assertPublicUrl } from "./ssrf.js";
 
 // Crawlee persists request queues to disk by default, which means a URL
 // processed once never gets re-processed — fatal for an API where each
@@ -36,7 +37,9 @@ export async function crawlSite(opts: CrawlOpts): Promise<{
   contentType: string;
   filename: string;
 }> {
-  const rootUrl = new URL(opts.url);
+  // SSRF guard: reject the seed up-front so a blocked target fails fast with
+  // a clear error rather than a generic crawl failure.
+  const rootUrl = await assertPublicUrl(opts.url);
   const pages: CrawledPage[] = [];
   const seen = new Set<string>();
 
@@ -61,6 +64,13 @@ export async function crawlSite(opts: CrawlOpts): Promise<{
     launchContext: {
       launchOptions: { headless: true },
     },
+    // Re-validate every navigation (redirects + enqueued links) so a public
+    // seed can't redirect or link into an internal address.
+    preNavigationHooks: [
+      async ({ request }) => {
+        await assertPublicUrl(request.url);
+      },
+    ],
     async requestHandler({ page, request, enqueueLinks }) {
       if (seen.has(request.loadedUrl ?? request.url)) return;
       seen.add(request.loadedUrl ?? request.url);

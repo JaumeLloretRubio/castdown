@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 import pino from "pino";
 import { crawlSite } from "./crawl.js";
+import { BlockedUrlError } from "./ssrf.js";
 
 const log = pino({ level: process.env.LOG_LEVEL ?? "info" });
 const PORT = Number(process.env.PORT ?? 8003);
@@ -36,6 +37,10 @@ app.post("/crawl", async (c) => {
       },
     });
   } catch (e) {
+    if (e instanceof BlockedUrlError) {
+      log.warn({ url: parsed.data.url, reason: e.message }, "crawl_blocked");
+      return c.json({ error: "url_not_allowed", message: e.message }, 400);
+    }
     log.error({ err: e }, "crawl_failed");
     return c.json({ error: "crawl_failed", message: (e as Error).message }, 500);
   }
