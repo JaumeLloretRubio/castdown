@@ -3,9 +3,10 @@ FROM node:20-bookworm-slim AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# System tools: pandoc (apt), weasyprint deps, typst (binary), chromium (for marp)
+# System tools: weasyprint deps, fonts, typst + pandoc (binaries), chromium (for marp)
+# NOTE: pandoc is NOT installed from apt — bookworm ships 2.17 which lacks the
+# `typst` writer (needs pandoc >= 3.0). Installed from the official release below.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    pandoc \
     weasyprint \
     fonts-dejavu \
     fonts-jetbrains-mono \
@@ -14,6 +15,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xz-utils \
     chromium \
     && rm -rf /var/lib/apt/lists/*
+
+# Pandoc — official release deb (apt's 2.17 has no typst writer; need >= 3.0)
+ARG PANDOC_VERSION=3.5
+RUN ARCH=$(dpkg --print-architecture) \
+    && curl -fsSL "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-${ARCH}.deb" -o /tmp/pandoc.deb \
+    && dpkg -i /tmp/pandoc.deb \
+    && rm /tmp/pandoc.deb
 
 # Typst — download static binary (multi-arch)
 ARG TYPST_VERSION=0.12.0
