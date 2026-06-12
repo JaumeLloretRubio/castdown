@@ -18,7 +18,7 @@ export function StatusBar() {
       <Seg>self-host · docker</Seg>
       <div className="flex-1" />
       <Seg>UTC {time}</Seg>
-      <Seg cls="bg-[var(--hi)] text-ink">brutalist</Seg>
+      <Seg cls="bg-[var(--hi)] text-ink">Jayoru</Seg>
     </div>
   );
 }
