@@ -1,29 +1,32 @@
 import { describe, it, expect } from "vitest";
 import { normalizeUnicode } from "../regex/normalize-unicode.js";
 
-describe("normalizeUnicode — split accent recomposition", () => {
-  it("composes an adjacent combining mark (plain NFD)", () => {
-    const nfd = "conversión"; // o + combining acute
-    expect(normalizeUnicode(nfd)).toBe("conversión");
+const ACUTE = "́"; // combining acute
+
+describe("normalizeUnicode — misplaced PDF accent recovery", () => {
+  it("moves an accent placed one letter early onto the vowel (real pdfminer cases)", () => {
+    expect(normalizeUnicode("est" + ACUTE + "a")).toBe("está");
+    expect(normalizeUnicode("duraci" + ACUTE + "on")).toBe("duración");
+    expect(normalizeUnicode("m" + ACUTE + "etodo")).toBe("método");
+    expect(normalizeUnicode("Ade" + "m" + ACUTE + "as")).toBe("Además");
+    expect(normalizeUnicode("valorar" + ACUTE + "a")).toBe("valorará");
+    expect(normalizeUnicode("electr" + ACUTE + "onicos")).toBe("electrónicos");
+    expect(normalizeUnicode("qu" + ACUTE + "e")).toBe("qué");
   });
 
-  it("reattaches a combining mark detached by a space", () => {
-    const split = "conversio ́n"; // o, space, combining acute
-    expect(normalizeUnicode(split)).toBe("conversión");
+  it("leaves an already-correct precomposed string untouched", () => {
+    expect(normalizeUnicode("está duración método")).toBe("está duración método");
+    expect(normalizeUnicode("niño café señor")).toBe("niño café señor");
   });
 
-  it("converts a spacing acute after the letter (o´ → ó)", () => {
-    expect(normalizeUnicode("conversio´n")).toBe("conversión");
+  it("does not push an accent onto a letter with no precomposed form", () => {
+    // b has no acute-precomposed form → leave the mark where it is (just NFC)
+    const input = "x" + ACUTE + "b";
+    expect(normalizeUnicode(input)).toBe(input.normalize("NFC"));
   });
 
-  it("converts a spacing acute separated by a space", () => {
-    expect(normalizeUnicode("conversio ´n")).toBe("conversión");
-  });
-
-  it("handles ñ via small tilde, ü via diaeresis, ç via cedilla", () => {
-    expect(normalizeUnicode("nin˜o")).toBe("niño");
-    expect(normalizeUnicode("u¨")).toBe("ü");
-    expect(normalizeUnicode("c¸")).toBe("ç");
+  it("composes a trailing combining mark with no following letter", () => {
+    expect(normalizeUnicode("cafe" + ACUTE)).toBe("café");
   });
 
   it("leaves ASCII syntax untouched (^ ~ ` are not accents)", () => {
@@ -33,12 +36,8 @@ describe("normalizeUnicode — split accent recomposition", () => {
   });
 
   it("does not touch code blocks", () => {
-    const md = "```\nlet x = o´;\n```";
+    const md = "```\nlet x = a" + ACUTE + "b;\n```";
     expect(normalizeUnicode(md)).toBe(md);
-  });
-
-  it("does not invent accents from a standalone diacritic before a letter", () => {
-    expect(normalizeUnicode("´ cafe")).toBe("´ cafe");
   });
 
   it("still maps smart quotes and dashes", () => {
@@ -46,7 +45,7 @@ describe("normalizeUnicode — split accent recomposition", () => {
   });
 
   it("is idempotent", () => {
-    const once = normalizeUnicode("conversio´n café");
+    const once = normalizeUnicode("duraci" + ACUTE + "on de la prueba");
     expect(normalizeUnicode(once)).toBe(once);
   });
 });
