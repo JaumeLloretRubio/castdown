@@ -1,6 +1,6 @@
 {
   "name": "castdown-cleaners",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Composable Markdown post-processing pipeline for MarkItDown, Docling, Pandoc, and LlamaParse output.",
   "type": "module",
   "main": "./src/index.ts",
@@ -43,9 +43,11 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/castdown/castdown",
+    "url": "git+https://github.com/JaumeLloretRubio/castdown.git",
     "directory": "packages/cleaners"
   },
+  "homepage": "https://github.com/JaumeLloretRubio/castdown/tree/main/packages/cleaners#readme",
+  "bugs": "https://github.com/JaumeLloretRubio/castdown/issues",
   "dependencies": {
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.0",
