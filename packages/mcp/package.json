@@ -1,6 +1,6 @@
 {
   "name": "castdown-mcp",
-  "version": "0.1.0-alpha",
+  "version": "0.1.0",
   "description": "MCP server for castdown — cast files/URLs to Markdown from any MCP client.",
   "type": "module",
   "main": "dist/index.js",

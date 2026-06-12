@@ -8,6 +8,7 @@ const GITHUB_URL = "https://github.com/JaumeLloretRubio/castdown";
 const NAV: { label: string; href: string; external?: boolean }[] = [
   { label: "API", href: "#api" },
   { label: "MCP", href: "#mcp" },
+  { label: "NPM", href: "#packages" },
   { label: "GitHub ↗", href: GITHUB_URL, external: true },
 ];
 
